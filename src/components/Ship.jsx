@@ -1,5 +1,6 @@
 import {useRef, useState, useEffect} from 'react';
 import {useFrame} from '@react-three/fiber';
+import * as THREE from 'three';
 
 export function Ship() {
     const meshRef = useRef();
@@ -29,6 +30,10 @@ export function Ship() {
         if (keys['s']) meshRef.current.translateZ(-speed);
         if (keys['a']) meshRef.current.rotation.y += rotationSpeed;
         if (keys['d']) meshRef.current.rotation.y -= rotationSpeed;
+
+        const relativeCameraOffset = new THREE.Vector3(0, 5, -10);
+        const cameraOffset = relativeCameraOffset.applyMatrix4(meshRef.current.matrixWorld);
+        state.camera.position.lerp(cameraOffset, 0.1);
     });
 
     return (
