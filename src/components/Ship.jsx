@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react'; 
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { getWaveHeight } from '../../utils/ocean';
 
 export function Ship() {
     const meshRef = useRef();
@@ -26,17 +27,21 @@ export function Ship() {
 
     useFrame((state, delta) => {
         if (!meshRef.current) return;
+        const t = state.clock.getElapsedTime();
 
         // read actual state from keysRef.current
         const keys = keysRef.current; 
 
-        const speed = 15 * delta; 
+        const speed = 5 * delta; 
         const rotationSpeed = 2 * delta;
 
         if (keys['w']) meshRef.current.translateZ(speed);
         if (keys['s']) meshRef.current.translateZ(-speed);
         if (keys['a']) meshRef.current.rotation.y += rotationSpeed;
         if (keys['d']) meshRef.current.rotation.y -= rotationSpeed;
+
+        const {x, z} = meshRef.current.position;
+        meshRef.current.position.y = getWaveHeight(x, z, t) - 0.2;
 
         // update matrix after movement
         meshRef.current.updateMatrixWorld(); 
