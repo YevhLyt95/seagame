@@ -1,14 +1,24 @@
 import { useRef, useEffect } from 'react'; 
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import {useGLTF} from '@react-three/drei';
 import { getWaveHeight } from '../../utils/ocean';
 
 export function Ship() {
     const meshRef = useRef();
     // Instead of useState is useRef for immediate access
     const keysRef = useRef({}); 
-
+    const { scene } = useGLTF('./public/models/ship.glb');
     useEffect(() => {
+        //setting up shadows and materials
+        scene.traverse((obj) => {
+            if( obj.isMesh ) {
+                obj.castShadow = true;
+                obj.receiveShadow = true;
+
+                if( obj.material ) obj.material.roughness = 0.8;
+            }
+        })
         const handleKeyDown = (e) => {
             keysRef.current = { ...keysRef.current, [e.key.toLowerCase()]: true };
         };
@@ -41,22 +51,26 @@ export function Ship() {
         if (keys['d']) meshRef.current.rotation.y -= rotationSpeed;
 
         const {x, z} = meshRef.current.position;
-        meshRef.current.position.y = getWaveHeight(x, z, t) - 0.2;
+        meshRef.current.position.y = getWaveHeight(x, z, t) + 0.3;
 
         // update matrix after movement
         meshRef.current.updateMatrixWorld(); 
 
         // camera
-        const relativeCameraOffset = new THREE.Vector3(0, 5, -10);
+        const relativeCameraOffset = new THREE.Vector3(0, 8, -22);
         const cameraOffset = relativeCameraOffset.applyMatrix4(meshRef.current.matrixWorld);
         state.camera.position.lerp(cameraOffset, 0.1);
         state.camera.lookAt(meshRef.current.position);
     });
 
     return (
-        <mesh ref={meshRef} position={[0, 0.5, 0]} castShadow>
-            <boxGeometry args={[1, 1, 2]} />
-            <meshStandardMaterial color="brown" />
-        </mesh>
+        <primitive
+            ref = {meshRef}
+            object = {scene}
+            scale = {0.15}
+            rotation-y = {Math.PI}
+        />
     );
 }
+
+useGLTF.preload('/models/ship.glb');
