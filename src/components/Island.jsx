@@ -1,4 +1,4 @@
-import React from 'react'
+import { SeaGull } from './AudioSystem';
 
 export function Island({ position, scale = [1, 1, 1], color = "gold" }) {
   return (
@@ -12,6 +12,7 @@ export function Island({ position, scale = [1, 1, 1], color = "gold" }) {
       <mesh position={[0, 0.5, 0]} castShadow>
         <dodecahedronGeometry args={[0.8, 0]} />
         <meshStandardMaterial color="slategrey" />
+        <SeaGull />
       </mesh>
     </group>
   )

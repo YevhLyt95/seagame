@@ -4,7 +4,7 @@ import { Ship } from './Ship'
 import { Island } from './Island'
 import { Sea } from './Sea'
 import { Wake } from './Wake';
-
+import { AmbientSound } from './AudioSystem';
 export function Scene() {
   const shipRef = useRef();
   return (
@@ -29,6 +29,7 @@ export function Scene() {
       <Island position={[20, -0.01, -10]} scale={[1.5, 1, 1.5]} color="olive" />
 
       <Sea />
+      <AmbientSound />
       
     </>
   )
