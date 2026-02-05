@@ -1,4 +1,4 @@
-import React, { useEffect, forwardRef } from 'react'; 
+import React, { useEffect, useRef, forwardRef } from 'react'; 
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
@@ -6,11 +6,11 @@ import { getWaveHeight } from '../../utils/ocean';
 import { Wake } from './Wake';
 
 export const Ship = forwardRef((props, ref) => {
+    //create ref just for ship model
+    const boarModelRef = useRef();
+    const keysRef = useRef({});
+    const { scene } = useGLTF ('/models/ship.glb');
 
-    const keysRef = React.useRef({}); 
-    
-    
-    const { scene } = useGLTF('/models/ship.glb');
 
     useEffect(() => {
         if (scene) {
@@ -63,10 +63,10 @@ export const Ship = forwardRef((props, ref) => {
         ref.current.updateMatrixWorld(); 
 
        
-        const relativeCameraOffset = new THREE.Vector3(0, 8, -22);
+        const relativeCameraOffset = new THREE.Vector3(0, 2, -10);
         const cameraOffset = relativeCameraOffset.applyMatrix4(ref.current.matrixWorld);
         state.camera.position.lerp(cameraOffset, 0.1);
-        state.camera.lookAt(ref.current.position);
+        state.camera.lookAt(ref.current.position.x, ref.current.position.y + 2, ref.current.position.z);
     });
     // wrapping ship with Wake in one group to synchronize them
     return (
@@ -74,7 +74,7 @@ export const Ship = forwardRef((props, ref) => {
             <primitive
                 object = {scene}
                 scale = {0.15}
-                rotation-y = {Math.PI}
+                rotation-y = {0}
             />
             <Wake />
         </group>
