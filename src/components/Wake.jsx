@@ -13,8 +13,8 @@ export function Wake ({shipRef}) {
             for (let i = 0; i < MAX_PARTICLES; i++) {
                 temp.push({
                 x: 0, y: 0, z: 0,
-                life: Math.random(),
-                size: Math.random() * 0.5
+                life: 1,
+                v: 0
             });
         }
         return temp;
@@ -22,33 +22,28 @@ export function Wake ({shipRef}) {
     const dummy = new THREE.Object3D();
 
     useFrame((state, delta) => {
-        if (!shipRef.current || !meshRef.current) return;
+        if (!meshRef.current) return;
 
-        const shipPos = new THREE.Vector3();
-        shipRef.current.getWorldPosition(shipPos);
-
-        //getting ship direction
-        const shipQuaternion = new THREE.Quaternion();
-        shipRef.current.getWorldQuaternion(shipQuaternion);
-        const backDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion);
 
         particles.forEach((p, i) => {
-            p.life += delta * 0.6; //disappearance rate
+            p.life += delta * 1.2; //disappearance rate
 
             if (p.life > 1) {
             //each particle respawn near the back of the ship after its death
                 p.life = 0;
-                p.x = shipPos.x + backDirection.x * 2 + (Math.random() - 0.5) * 0.8;
-                p.y = shipPos.Pos.y - 0.2; //slightly under the water level
-                p.z = shipPos.z + backDirection.z * 2 + (Math.random() - 0.5) * 0.8;
-                p.size = 0.1;
+                p.x = (Math.random() - 0.5) * 0.6;
+                p.y = -0.4; //slightly under the water level
+                p.z = 0;
+                p.v = 4 + Math.random() * 2;
             }
 
-            //particle gets bigger and go upwards
-
-            const scale = p.life * 2;
+            //move back from the ship
+            p.z -= p.v * delta;
             dummy.position.set(p.x, p.y, p.z);
-            dummy.scale.set(scale, scale, scale);
+
+            const s = Math.sin(p.life * Math.PI) * 1.2;
+            dummy.scale.set(s, s, s);
+
             dummy.updateMatrix();
             meshRef.current.setMatrixAt(i, dummy.matrix);
         
@@ -59,7 +54,7 @@ export function Wake ({shipRef}) {
 
     return (
         <instancedMesh ref={meshRef} args={[null, null, MAX_PARTICLES]}>
-            <sphereGeometry args={[0.3, 4, 4]} /> {/* Лоу-полі кульки */}
+            <sphereGeometry args={[0.3, 4, 4]} /> {/* low poly particles */}
             <meshBasicMaterial color="white" transparent opacity={0.4} />
         </instancedMesh>
     );

@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
 import { getWaveHeight } from '../../utils/ocean';
+import { Wake } from './Wake';
 
 export const Ship = forwardRef((props, ref) => {
 
@@ -67,14 +68,16 @@ export const Ship = forwardRef((props, ref) => {
         state.camera.position.lerp(cameraOffset, 0.1);
         state.camera.lookAt(ref.current.position);
     });
-
+    // wrapping ship with Wake in one group to synchronize them
     return (
-        <primitive
-            ref={ref} 
-            object={scene}
-            scale={0.15}
-            rotation-y={Math.PI}
-        />
+        <group ref = {ref}>
+            <primitive
+                object = {scene}
+                scale = {0.15}
+                rotation-y = {Math.PI}
+            />
+            <Wake />
+        </group>
     );
 });
 
