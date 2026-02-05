@@ -22,7 +22,7 @@ export function Wake ({shipRef}) {
     const dummy = new THREE.Object3D();
 
     useFrame((state, delta) => {
-        if (!shipRef.current || !MeshReflectorMaterial.current) return;
+        if (!shipRef.current || !meshRef.current) return;
 
         const shipPos = new THREE.Vector3();
         shipRef.current.getWorldPosition(shipPos);
@@ -33,14 +33,14 @@ export function Wake ({shipRef}) {
         const backDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion);
 
         particles.forEach((p, i) => {
-            p.life += delta * 0.5; //disappearance rate
+            p.life += delta * 0.6; //disappearance rate
 
             if (p.life > 1) {
             //each particle respawn near the back of the ship after its death
                 p.life = 0;
-                p.x = shipPos.x + backDirection.x * 2 + (Math.random() - 0.5) * 0.5;
+                p.x = shipPos.x + backDirection.x * 2 + (Math.random() - 0.5) * 0.8;
                 p.y = shipPos.Pos.y - 0.2; //slightly under the water level
-                p.z = shipPos.z + backDirection.z * 2 + (Math.random() - 0.5) * 0.5;
+                p.z = shipPos.z + backDirection.z * 2 + (Math.random() - 0.5) * 0.8;
                 p.size = 0.1;
             }
 

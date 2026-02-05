@@ -1,9 +1,12 @@
+import { useRef } from 'react';
 import { Sky } from '@react-three/drei'
 import { Ship } from './Ship'
 import { Island } from './Island'
 import { Sea } from './Sea'
+import { Wake } from './Wake';
 
 export function Scene() {
+  const shipRef = useRef();
   return (
     <>
       <Sky sunPosition={[100, 20, 100]} />
@@ -16,7 +19,9 @@ export function Scene() {
       />
 
       {/* Ship and logic */}
-      <Ship />
+      <Ship ref = {shipRef} />
+  
+      <Wake shipRef = {shipRef}/> //passing ref to the wake in order it can see the ship
 
       {/* Islands */}
       <Island position={[10, -0.01, 10]} color="palegoldenrod" />
